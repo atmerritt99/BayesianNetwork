@@ -1,6 +1,7 @@
 import BayesianNetwork
 
 model = BayesianNetwork.BayesianNetwork()
+'''
 training_data = []
                     
 with open("data\BurglaryAlarmExampleData.csv", "r") as data_file:
@@ -13,8 +14,13 @@ with open("data\BurglaryAlarmExampleData.csv", "r") as data_file:
 
 model.train(training_data)
 
-query = (None, None, None, 1, 1)
-givens = (1, None, None, None, None)
+model.save('burglary_alarm_bayesian_model.txt')
+'''
 
-#What is the probability that John and Mary call given a burglary
+model.load('burglary_alarm_bayesian_model.txt')
+
+query = (1, None, None, None, None)
+givens = (None, None, None, 1, 1)
+
+#What is the probability of a burglary given John and Mary call
 print(model.get_probability(query, givens))

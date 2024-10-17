@@ -3,6 +3,21 @@ class BayesianNetwork:
     def __init__(self):
         self.bayesian_nodes = {}
 
+    def load(self, file_name):
+        self.bayesian_nodes = {}
+
+        with open(file_name, 'r') as network_file:
+            lines = network_file.readlines()
+            
+            for line in lines:
+                stripped_line = line.strip() #Remove Newline
+
+                tokens = stripped_line.split('|')
+
+                node = tuple(map(int, tokens[0].split(','))) #Convert to numerical data
+                self.bayesian_nodes[node] = float(tokens[1])
+                
+
     def train(self, training_data):
 
         x = 1 / len(training_data)
@@ -14,6 +29,7 @@ class BayesianNetwork:
             else:
                 self.bayesian_nodes[training_data_row] = x
 
+    #Returns probability of the query being true provided some given evidence
     def get_probability(self, query, givens):
         
         probability_of_query_given = 0
@@ -44,3 +60,19 @@ class BayesianNetwork:
                     probability_of_query_given += self.bayesian_nodes[node]
 
         return probability_of_query_given / probability_of_given
+    
+    def save(self, file_name):
+        with open(file_name, 'w') as network_file:
+            network_file.write(str(self))
+    
+    def __str__(self):
+
+        result = ""
+
+        for node in self.bayesian_nodes.keys():
+            node_elements = []
+            for item in node:
+                node_elements.append(str(item))
+            result += f"{','.join(node_elements)}|{self.bayesian_nodes[node]}\n"
+
+        return result
