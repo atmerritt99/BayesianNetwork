@@ -19,8 +19,15 @@ model.save('burglary_alarm_bayesian_model.txt')
 
 model.load('burglary_alarm_bayesian_model.txt')
 
-query = (1, None, None, None, None)
-givens = (None, None, None, 1, 1)
+query = (1, 1, None, None, None)
+givens = (None, None, 0, 1, 1)
 
-#What is the probability of a burglary given John and Mary call
-print(model.get_probability(query, givens))
+#What is the probability of a burglary and earthquake given John and Mary call but theres no alarm
+print(model.bayes_eval(query, givens))
+print(model.bayes_eval(query, givens, .5))
+
+#Remove this node, so later I can simulate a use case for the clarity variable
+del model.bayesian_nodes[(1,1,0,1,1)]
+
+print(model.bayes_eval(query, givens))
+print(model.bayes_eval(query, givens, .5))

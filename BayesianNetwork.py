@@ -30,22 +30,36 @@ class BayesianNetwork:
                 self.bayesian_nodes[training_data_row] = x
 
     #Returns probability of the query being true provided some given evidence
-    def get_probability(self, query, givens):
+    #Clarity should be a float between 0 - 1 representing how 'clear' the bayesian model is
+    #When clarity is lower than 1, the model will include nodes that match that percentage or higher of givens into the calculations
+    #The probability isn't exact but it can get close enough
+    #Ideally, you should use a higher value like .75 or .9 and only when a large number of givens are present
+    #The purpose behind the clarity value is to reduce overfitting of the model
+    #A clarity of 1 means getting the probability the query matches a subset of the training data that matches a set of givens
+    #Overfitting may not be a problem if theres a large enough amount of data
+    def bayes_eval(self, query, givens, clarity=1):
         
         probability_of_query_given = 0
         probability_of_given = 0
 
+        number_of_specified_givens = 0
+        for g in givens:
+            if g == None:
+                continue
+            number_of_specified_givens += 1
+
         for node in self.bayesian_nodes.keys():
 
-            givens_true_for_node = True
+            givens_true_for_node = 0
             for i in range(len(givens)):
                 if givens[i] == None:
                     continue
-                elif givens[i] != node[i]:
-                    givens_true_for_node = False
-                    break
+                elif givens[i] == node[i]:
+                    givens_true_for_node += 1
+
+            givens_true_for_node /= number_of_specified_givens
             
-            if givens_true_for_node:
+            if givens_true_for_node >= clarity:
                 probability_of_given += self.bayesian_nodes[node]
                 query_true_for_node = True
 
